@@ -7,8 +7,8 @@ export default function App() {
   return (
     <>
       <Header />
+      <div className="grid justify-center ">
       <Hero />
-      <div>
         <TaskBoard />
       </div>
       <Footer />

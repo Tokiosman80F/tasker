@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function TaskModal({ onSave, onTaskEdit }) {
+function TaskModal({ onSave, onTaskEdit,onClose }) {
   const [task, setTask] = useState(
     onTaskEdit || {
       id: crypto.randomUUID(),
@@ -93,7 +93,7 @@ function TaskModal({ onSave, onTaskEdit }) {
             </div>
           </div>
 
-          <div className="mt-16 flex justify-center lg:mt-20">
+          <div className="mt-16 flex justify-evenly lg:mt-20">
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -103,6 +103,12 @@ function TaskModal({ onSave, onTaskEdit }) {
               className="rounded bg-blue-600 px-4 py-2 text-white transition-all hover:opacity-80"
             >
               Save
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded bg-red-600 px-4 py-2 text-white transition-all hover:opacity-80"
+            >
+              Cancel
             </button>
           </div>
         </form>
