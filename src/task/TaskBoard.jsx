@@ -1,4 +1,5 @@
 import { useState } from "react";
+import NoTaskFound from "./NoTaskFound";
 import SearchTask from "./SearchTask";
 import TaskAction from "./TaskAction";
 import TaskList from "./TaskList";
@@ -39,37 +40,74 @@ function TaskBoard() {
     setEditTask(task);
     setShowTaskModal(true);
   }
-  
-  function handleCloseModal(){
-    setEditTask(null)
+
+  function handleCloseModal() {
+    setEditTask(null);
     setShowTaskModal(false);
   }
 
-  function handleDelete(taskId){
+  function handleDelete(taskId) {
     // console.log("taskId :",taskId);
-    
-    const updatedTask=tasks.filter(task=>task.id !==taskId)
-    setTasks(updatedTask)
+
+    const updatedTask = tasks.filter((task) => task.id !== taskId);
+    setTasks(updatedTask);
   }
 
-  function handleDeleteAll(){
-    tasks.length=0
-   setTasks([...tasks]) 
+  function handleDeleteAll() {
+    tasks.length = 0;
+    setTasks([...tasks]);
+  }
+
+  function handleFavourite(taskId) {
+    setTasks(
+      tasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, isFav: !task.isFav };
+        } else {
+          return task;
+        }
+      }),
+    );
+  }
+
+  function handleSearch(searchTerm) {
+    const filter = tasks.filter((task) =>
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setTasks([...filter]);
   }
 
   return (
     <section className="mb-20" id="tasks">
       <div className="container">
         {showTaskModal && (
-          <TaskModal onSave={handleAddClick} onTaskEdit={editTask} onClose={handleCloseModal} />
+          <TaskModal
+            onSave={handleAddClick}
+            onTaskEdit={editTask}
+            onClose={handleCloseModal}
+          />
         )}
         <div className="p-2 flex justify-end">
-          <SearchTask />
+          <SearchTask onSearch={handleSearch} />
         </div>
 
         <div className="rounded-xl border border-[rgba(206,206,206,0.12)] bg-[#1D212B] px-6 py-8 md:px-9 md:py-16">
-          <TaskAction onAddClick={() => { setShowTaskModal(true) }}  onDeleteAll={handleDeleteAll}/>
-          <TaskList tasks={tasks} onEditClick={handleEdit} onDelete={handleDelete} />
+          <TaskAction
+            onAddClick={() => {
+              setShowTaskModal(true);
+            }}
+            onDeleteAll={handleDeleteAll}
+          />
+          {tasks.length > 0 ? (
+            <TaskList
+              tasks={tasks}
+              onEditClick={handleEdit}
+              onDelete={handleDelete}
+              onFav={handleFavourite}
+            />
+          ) : (
+            <NoTaskFound />
+          )}
         </div>
       </div>
     </section>
