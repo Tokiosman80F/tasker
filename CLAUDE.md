@@ -13,29 +13,28 @@ No test framework is configured.
 
 ## Architecture
 
-Tasker is a React 18 task management app built with Vite 7 and Tailwind CSS v4.
+Tasker is a React 18 task management app built with Vite 7 and Tailwind CSS v4. Based on the "Learn with Sumit" Reactive Accelerator course.
 
-**State management:** All task state lives in `TaskBoard` via `useState`. There is no context, reducer, or external state library. `TaskBoard` owns the `tasks` array and passes callbacks down to child components.
+**State management:** All task state lives in `TaskBoard` via `useState`. There is no context, reducer, or external state library. `TaskBoard` owns the `tasks` array, `searchTerm`, `showTaskModal`, and `editTask` state, passing callbacks down to child components.
 
 **Component tree:**
 ```
 App
 ├── Header
 ├── Hero
-├── TaskBoard  (stateful — owns tasks[], showTaskModal, editTask)
-│   ├── SearchTask
-│   ├── TaskAction  (Add Task / Delete All buttons)
-│   ├── TaskList    (renders task table rows)
-│   └── TaskModal   (add/edit form, conditionally rendered)
+├── TaskBoard  (stateful — owns tasks[], searchTerm, showTaskModal, editTask)
+│   ├── SearchTask       (controlled input, filters tasks by title)
+│   ├── TaskAction       (Add Task / Delete All buttons)
+│   ├── TaskList         (renders task table rows with edit/delete/fav actions)
+│   ├── NoTaskFound      (shown when filtered task list is empty)
+│   └── TaskModal        (add/edit form, conditionally rendered as overlay)
 └── Footer
 ```
 
+**Key patterns:**
+- Task IDs generated via `crypto.randomUUID()`
+- `TaskModal` handles both add and edit: receives the task object as `onTaskEdit` (null for add mode), determines mode via `isAdd = !onTaskEdit`
+- `TaskModal` validates title and priority fields before saving; tags are comma-separated strings converted to arrays
+- Search filters `tasks` array by case-insensitive title match before rendering
+
 **Styling:** Tailwind v4 via `@tailwindcss/vite` plugin (not PostCSS). CSS entry point is `src/index.css` with `@import "tailwindcss"`. Dark theme with `bg-[#191D26]` base set on `<body>` in `index.html`.
-
-## Known incomplete features
-
-- Search (SearchTask) is a static form with no filtering logic
-- Delete button in TaskList has no handler wired up
-- "Delete All" button in TaskAction has no handler
-- Favorite toggle (star icon) is display-only, not interactive
-- TaskModal receives `onTaskEdit` but TaskBoard passes the task object (not a function) — edit flow has a prop mismatch
