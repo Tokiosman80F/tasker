@@ -12,7 +12,7 @@ function TaskModal({ onSave, onTaskEdit, onClose }) {
     },
   );
 
-  const [error, setError] = useState({});
+  const [errors, seterrors] = useState({});
 
   const isAdd = !onTaskEdit;
 
@@ -28,16 +28,28 @@ function TaskModal({ onSave, onTaskEdit, onClose }) {
     }
     setTask((prev) => ({ ...prev, [name]: newValue }));
 
-    if (error[name]) {
-      setError((prev) => ({ ...prev, [name]: "" }));
+    if (errors[name]) {
+      seterrors((prev) => ({ ...prev, [name]: "" }));
     }
+  }
+
+  function handleSave(e) {
+    e.preventDefault();
+    const newerrors = {};
+    if (!task.title.trim()) newerrors.title = "Title is required";
+    if (!task.priority) newerrors.priority = "Priority is required";
+    if (Object.keys(newerrors).length > 0) {
+      seterrors(newerrors);
+      return;
+    }
+
+    onSave(task, isAdd);
   }
 
   return (
     <>
-      <div className="absolute top-0 left-0 h-full w-full z-10 opacity-10 bg-gray-400"></div>
-      <div className="absolute top-1/3 left-1/3 z-10 ">
-        <form className="mx-auto my-10 w-full max-w-185 rounded-xl border border-[#FEFBFB]/36 bg-[#191D26] p-9 max-md:px-4 lg:my-20 lg:p-11">
+      <div className="absolute h-full w-full inset-0 z-10 bg-gray-900/60 flex items-center justify-center">
+        <form className="mx-auto my-10 w-full max-w-160 rounded-xl border border-[#FEFBFB]/36 bg-[#191D26] p-9 max-md:px-4 lg:my-20 lg:p-11">
           <h2 className="mb-9 text-center text-2xl font-bold text-white lg:mb-11 lg:text-[28px]">
             {isAdd ? " Add New Task" : " Edit Task"}
           </h2>
@@ -54,6 +66,9 @@ function TaskModal({ onSave, onTaskEdit, onClose }) {
                 onChange={handleChange}
                 required
               />
+              {errors.title && (
+                <p className="text-red-400 text-sm">{errors.title}</p>
+              )}
             </div>
 
             <div className="space-y-2 lg:space-y-3">
@@ -77,7 +92,7 @@ function TaskModal({ onSave, onTaskEdit, onClose }) {
                   type="text"
                   name="tags"
                   id="tags"
-                  value={task.tags}
+                  value={task.tags.join(",")}
                   onChange={handleChange}
                   required
                 />
@@ -98,6 +113,9 @@ function TaskModal({ onSave, onTaskEdit, onClose }) {
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
                 </select>
+                {errors.priority && (
+                  <p className="text-red-400 text-sm">{errors.priority}</p>
+                )}
               </div>
             </div>
           </div>
