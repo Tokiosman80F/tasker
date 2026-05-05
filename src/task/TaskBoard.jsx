@@ -5,19 +5,25 @@ import TaskAction from "./TaskAction";
 import TaskList from "./TaskList";
 import TaskModal from "./TaskModal";
 
+const defaultTask = {
+  id: crypto.randomUUID(),
+  title: "React",
+  description:
+    "Connect an existing API to a third-party database using secure methods and handle data exchange efficiently.",
+  tags: ["React", "Javascript", "api"],
+  priority: "High",
+  isFav: true,
+};
+
 function TaskBoard() {
-  const defaultTask = {
-    id: crypto.randomUUID(),
-    title: "React",
-    description:
-      "Connect an existing API to a third-party database using secure methods and handle data exchange efficiently.",
-    tags: ["React", "Javascript", "api"],
-    priority: "High",
-    isFav: true,
-  };
   const [tasks, setTasks] = useState([defaultTask]);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const displayTasks = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   function handleAddClick(newTask, isAdd) {
     if (isAdd) {
@@ -54,8 +60,9 @@ function TaskBoard() {
   }
 
   function handleDeleteAll() {
-    tasks.length = 0;
-    setTasks([...tasks]);
+    // tasks.length = 0;
+    setTasks([]);
+    setSearchTerm("");
   }
 
   function handleFavourite(taskId) {
@@ -70,13 +77,6 @@ function TaskBoard() {
     );
   }
 
-  function handleSearch(searchTerm) {
-    const filter = tasks.filter((task) =>
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    setTasks([...filter]);
-  }
-
   return (
     <section className="mb-20" id="tasks">
       <div className="container">
@@ -88,7 +88,7 @@ function TaskBoard() {
           />
         )}
         <div className="p-2 flex justify-end">
-          <SearchTask onSearch={handleSearch} />
+          <SearchTask value={searchTerm} onChange={setSearchTerm} />
         </div>
 
         <div className="rounded-xl border border-[rgba(206,206,206,0.12)] bg-[#1D212B] px-6 py-8 md:px-9 md:py-16">
@@ -98,9 +98,9 @@ function TaskBoard() {
             }}
             onDeleteAll={handleDeleteAll}
           />
-          {tasks.length > 0 ? (
+          {displayTasks.length > 0 ? (
             <TaskList
-              tasks={tasks}
+              tasks={displayTasks}
               onEditClick={handleEdit}
               onDelete={handleDelete}
               onFav={handleFavourite}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function TaskModal({ onSave, onTaskEdit,onClose }) {
+function TaskModal({ onSave, onTaskEdit, onClose }) {
   const [task, setTask] = useState(
     onTaskEdit || {
       id: crypto.randomUUID(),
@@ -12,16 +12,25 @@ function TaskModal({ onSave, onTaskEdit,onClose }) {
     },
   );
 
-  const [isAdd, setIsAdd] = useState(Object.is(onTaskEdit, null));
+  const [error, setError] = useState({});
+
+  const isAdd = !onTaskEdit;
 
   function handleChange(e) {
-    e.preventDefault();
-    let name = e.target.name;
-    let value = e.target.value;
+    const { name, value } = e.target;
+    let newValue = value;
+
     if (name === "tags") {
-      value = value.split(",");
+      newValue = value
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
     }
-    setTask({ ...task, [name]: value });
+    setTask((prev) => ({ ...prev, [name]: newValue }));
+
+    if (error[name]) {
+      setError((prev) => ({ ...prev, [name]: "" }));
+    }
   }
 
   return (
@@ -95,10 +104,7 @@ function TaskModal({ onSave, onTaskEdit,onClose }) {
 
           <div className="mt-16 flex justify-evenly lg:mt-20">
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                onSave(task, isAdd);
-              }}
+              onClick={handleSave}
               type="submit"
               className="rounded bg-blue-600 px-4 py-2 text-white transition-all hover:opacity-80"
             >
