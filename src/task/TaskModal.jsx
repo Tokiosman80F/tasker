@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-function TaskModal({ onSave, onClose, onEdit }) {
+function TaskModal({ onSave, onClose, taskToEdit }) {
   const [task, setTask] = useState(
-    onEdit || {
+    taskToEdit || {
       id: crypto.randomUUID(),
       title: "",
       description: "",
@@ -13,7 +13,7 @@ function TaskModal({ onSave, onClose, onEdit }) {
   );
   const [errors, setErrors] = useState({});
 
-  const isAdd = !onEdit;
+  const isAdd = !taskToEdit;
 
   function handleChange(e) {
     const { name, value } = e.target;

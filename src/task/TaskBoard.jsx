@@ -40,15 +40,17 @@ function TaskBoard() {
       );
     }
     setShowModal(false);
+    setEditTask(null);
   }
 
   function handleEdit(task) {
-    console.log("the edited task:", task);
     setEditTask(task);
+    setShowModal(true);
   }
 
   function handleCloseModal() {
     setShowModal(false);
+    setEditTask(null);
   }
 
   return (
@@ -57,7 +59,7 @@ function TaskBoard() {
         <TaskModal
           onSave={handleAddTask}
           onClose={handleCloseModal}
-          onEdit={handleEdit}
+          taskToEdit={editTask}
         />
       )}
       <div className="container">
